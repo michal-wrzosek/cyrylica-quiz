@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/cyrylica-quiz/static/css/main.5ecd60fb.chunk.css",
+    "main.js": "/cyrylica-quiz/static/js/main.acfcdaf2.chunk.js",
+    "main.js.map": "/cyrylica-quiz/static/js/main.acfcdaf2.chunk.js.map",
+    "runtime~main.js": "/cyrylica-quiz/static/js/runtime~main.1961c143.js",
+    "runtime~main.js.map": "/cyrylica-quiz/static/js/runtime~main.1961c143.js.map",
+    "static/js/2.cd18235f.chunk.js": "/cyrylica-quiz/static/js/2.cd18235f.chunk.js",
+    "static/js/2.cd18235f.chunk.js.map": "/cyrylica-quiz/static/js/2.cd18235f.chunk.js.map",
+    "index.html": "/cyrylica-quiz/index.html",
+    "precache-manifest.b31cfcf2786d593e49c55550a6b27ace.js": "/cyrylica-quiz/precache-manifest.b31cfcf2786d593e49c55550a6b27ace.js",
+    "service-worker.js": "/cyrylica-quiz/service-worker.js",
+    "static/css/main.5ecd60fb.chunk.css.map": "/cyrylica-quiz/static/css/main.5ecd60fb.chunk.css.map"
+  }
+}
