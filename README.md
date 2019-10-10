@@ -1,18 +1,9 @@
-# Create React App Boilerplate
+# Cyrylica Quiz
 
-This is a simple typescript project bootstrapped with create-read-app (v3.1.1) with a basic configuration:
+This app is a small quiz for learning Russian letters intended for Polish speakers.
 
-- tsconfig.json alias for local imports
-- eslint with prettier
-- vscode settings
-
-### VSCode Extensions
-
-You should also make sure to install this VSCode extensions:
-
-- ESLint (dbaeumer.vscode-eslint)
-- Prettier - Code formatter (esbenp.prettier-vscode)
+[Quiz dostępny tutaj](https://michal-wrzosek.github.io/cyrylica-quiz)
 
 ---
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project uses [Create React App](https://github.com/facebook/create-react-app) and was bootstrapped with [CRA Boilerplate](https://github.com/michal-wrzosek/create-react-app-boilerplate).
