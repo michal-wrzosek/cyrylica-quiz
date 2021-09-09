@@ -1,15 +1,20 @@
 {
   "files": {
-    "main.css": "/cyrylica-quiz/static/css/main.5ecd60fb.chunk.css",
-    "main.js": "/cyrylica-quiz/static/js/main.acfcdaf2.chunk.js",
-    "main.js.map": "/cyrylica-quiz/static/js/main.acfcdaf2.chunk.js.map",
-    "runtime~main.js": "/cyrylica-quiz/static/js/runtime~main.1961c143.js",
-    "runtime~main.js.map": "/cyrylica-quiz/static/js/runtime~main.1961c143.js.map",
-    "static/js/2.cd18235f.chunk.js": "/cyrylica-quiz/static/js/2.cd18235f.chunk.js",
-    "static/js/2.cd18235f.chunk.js.map": "/cyrylica-quiz/static/js/2.cd18235f.chunk.js.map",
+    "main.css": "/cyrylica-quiz/static/css/main.6dea0f05.chunk.css",
+    "main.js": "/cyrylica-quiz/static/js/main.0e6c51ee.chunk.js",
+    "main.js.map": "/cyrylica-quiz/static/js/main.0e6c51ee.chunk.js.map",
+    "runtime-main.js": "/cyrylica-quiz/static/js/runtime-main.79409b6b.js",
+    "runtime-main.js.map": "/cyrylica-quiz/static/js/runtime-main.79409b6b.js.map",
+    "static/js/2.6cf744dc.chunk.js": "/cyrylica-quiz/static/js/2.6cf744dc.chunk.js",
+    "static/js/2.6cf744dc.chunk.js.map": "/cyrylica-quiz/static/js/2.6cf744dc.chunk.js.map",
     "index.html": "/cyrylica-quiz/index.html",
-    "precache-manifest.b31cfcf2786d593e49c55550a6b27ace.js": "/cyrylica-quiz/precache-manifest.b31cfcf2786d593e49c55550a6b27ace.js",
-    "service-worker.js": "/cyrylica-quiz/service-worker.js",
-    "static/css/main.5ecd60fb.chunk.css.map": "/cyrylica-quiz/static/css/main.5ecd60fb.chunk.css.map"
-  }
+    "static/css/main.6dea0f05.chunk.css.map": "/cyrylica-quiz/static/css/main.6dea0f05.chunk.css.map",
+    "static/js/2.6cf744dc.chunk.js.LICENSE.txt": "/cyrylica-quiz/static/js/2.6cf744dc.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.79409b6b.js",
+    "static/js/2.6cf744dc.chunk.js",
+    "static/css/main.6dea0f05.chunk.css",
+    "static/js/main.0e6c51ee.chunk.js"
+  ]
 }
