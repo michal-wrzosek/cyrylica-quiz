@@ -267,7 +267,7 @@ export const rusToPol = (inputString: string): string[] => {
 
   for (let i = 0; i < input.length; i++) {
     const rusLetter = input[i];
-    const rusLetterObject = rusLetters[input[i]];
+    const rusLetterObject = rusLetters[rusLetter];
 
     if (rusLetterObject) {
       output.push(rusLetterObject.pol);

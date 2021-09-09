@@ -1,7 +1,10 @@
-import * as React from 'react';
+import React, { useState } from 'react';
+import styled, { createGlobalStyle, css } from 'styled-components';
+import { repeat } from 'rambda';
 
 import { rusLettersArray, RusLetter, rusLetters } from './rusToPol';
-import styled, { createGlobalStyle, css } from 'styled-components';
+
+type FailureLevel = { [rusLetter: string]: number };
 
 const GlobalStyles = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap&subset=cyrillic');
@@ -15,10 +18,40 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
-const getRandomRusLetter = (letters: RusLetter[]): RusLetter => {
-  const index = Math.floor(Math.random() * letters.length);
-  return letters[index];
+const getRandomRusLetter = (rusLettersArray: RusLetter[], failureLevel: FailureLevel): RusLetter => {
+  const rusLettersMultipliedByFailureLevel = rusLettersArray.reduce<RusLetter[]>((sum, rusLetter) => {
+    const timesToRepeat = failureLevel[rusLetter.letter];
+    return [...sum, ...repeat(rusLetter)(timesToRepeat)];
+  }, []);
+
+  const index = Math.floor(Math.random() * rusLettersMultipliedByFailureLevel.length);
+  return rusLettersMultipliedByFailureLevel[index];
 };
+
+const FAILURE_LEVEL_FAILURE_PENALTY = 9;
+const FAILURE_LEVEL_SUCCESS_REWARD = 3;
+const FAILURE_LEVEL_MIN = 1;
+const FAILURE_LEVEL_INITIAL = 3;
+
+const getInitialFailureLevel = (): FailureLevel =>
+  Object.values(rusLetters).reduce((sum, { letter }) => ({ ...sum, [letter]: FAILURE_LEVEL_INITIAL }), {});
+
+const getNewFailureLevelOnSuccess =
+  (rusLetter: RusLetter) =>
+  (previousFailureLevel: FailureLevel): FailureLevel => ({
+    ...previousFailureLevel,
+    [rusLetter.letter]: Math.max(
+      previousFailureLevel[rusLetter.letter] - FAILURE_LEVEL_SUCCESS_REWARD,
+      FAILURE_LEVEL_MIN,
+    ),
+  });
+
+const getNewFailureLevelOnFailure =
+  (rusLetter: RusLetter) =>
+  (previousFailureLevel: FailureLevel): FailureLevel => ({
+    ...previousFailureLevel,
+    [rusLetter.letter]: previousFailureLevel[rusLetter.letter] + FAILURE_LEVEL_FAILURE_PENALTY,
+  });
 
 const Button = styled.div`
   display: flex;
@@ -124,23 +157,24 @@ const Wrapper = styled.div`
 
 export const Quiz = () => {
   const NR_OF_ANSWERS = 5;
-  const [question, setQuestion] = React.useState<RusLetter | undefined>();
-  const [answers, setAnswers] = React.useState<{ answer: RusLetter; order: number }[]>([]);
-  const [selectedAnswer, setSelectedAnswer] = React.useState<RusLetter | undefined>(undefined);
-  const [score, setScore] = React.useState(0);
+  const [question, setQuestion] = useState<RusLetter | undefined>();
+  const [answers, setAnswers] = useState<{ answer: RusLetter; order: number }[]>([]);
+  const [selectedAnswer, setSelectedAnswer] = useState<RusLetter | undefined>(undefined);
+  const [score, setScore] = useState(0);
+  const [failureLevel, setFailureLevel] = useState(getInitialFailureLevel());
 
   const nextQuestion = () => {
-    const newQuestion = getRandomRusLetter(rusLettersArray);
+    const newQuestion = getRandomRusLetter(rusLettersArray, failureLevel);
     const answersStack = [newQuestion];
 
     for (let i = 0; i < NR_OF_ANSWERS - 1; i++) {
       const otherLetters = rusLettersArray.filter(
-        l => !answersStack.map(a => a.letter).includes(l.letter) && !answersStack.map(a => a.pol).includes(l.pol),
+        (l) => !answersStack.map((a) => a.letter).includes(l.letter) && !answersStack.map((a) => a.pol).includes(l.pol),
       );
-      answersStack.push(getRandomRusLetter(otherLetters));
+      answersStack.push(getRandomRusLetter(otherLetters, failureLevel));
     }
 
-    const newAnswers = answersStack.map(a => ({
+    const newAnswers = answersStack.map((a) => ({
       answer: rusLetters[a.letter],
       order: Math.floor(Math.random() * NR_OF_ANSWERS * 2),
     }));
@@ -152,6 +186,7 @@ export const Quiz = () => {
 
   React.useEffect(() => {
     nextQuestion();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAnswerClick = (answer: RusLetter) => {
@@ -159,9 +194,11 @@ export const Quiz = () => {
       const isCorrect = answer.letter === question.letter;
 
       if (isCorrect) {
-        setScore(prev => prev + 10);
+        setScore((prev) => prev + 10);
+        setFailureLevel(getNewFailureLevelOnSuccess(question));
       } else {
-        setScore(prev => (prev > 20 ? prev - 20 : 0));
+        setScore((prev) => (prev > 20 ? prev - 20 : 0));
+        setFailureLevel(getNewFailureLevelOnFailure(question));
       }
       setSelectedAnswer(answer);
     }
