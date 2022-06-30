@@ -5,18 +5,11 @@ import { repeat } from 'rambda';
 import { rusLettersArray, RusLetter, rusLetters } from './rusToPol';
 
 type FailureLevel = { [rusLetter: string]: number };
-
-const GlobalStyles = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap&subset=cyrillic');
-
-  body {
-    font-family: 'Roboto', sans-serif;
-  }
-
-  *, *:before, *:after {
-    box-sizing: border-box;
-  }
-`;
+type CommonMistakes = { [rusLetter: string]: RusLetter[] };
+enum Languages {
+  EN = 'EN',
+  PL = 'PL',
+}
 
 const getRandomRusLetter = (rusLettersArray: RusLetter[], failureLevel: FailureLevel): RusLetter => {
   const rusLettersMultipliedByFailureLevel = rusLettersArray.reduce<RusLetter[]>((sum, rusLetter) => {
@@ -29,6 +22,7 @@ const getRandomRusLetter = (rusLettersArray: RusLetter[], failureLevel: FailureL
 };
 
 const FAILURE_LEVEL_FAILURE_PENALTY = 9;
+const FAILURE_LEVEL_COMMON_MISTAKE_PENALTY = FAILURE_LEVEL_FAILURE_PENALTY * 5;
 const FAILURE_LEVEL_SUCCESS_REWARD = 3;
 const FAILURE_LEVEL_MIN = 1;
 const FAILURE_LEVEL_INITIAL = 3;
@@ -52,6 +46,40 @@ const getNewFailureLevelOnFailure =
     ...previousFailureLevel,
     [rusLetter.letter]: previousFailureLevel[rusLetter.letter] + FAILURE_LEVEL_FAILURE_PENALTY,
   });
+
+const getInitialCommonMistakes = (): CommonMistakes =>
+  Object.values(rusLetters).reduce((sum, { letter }) => ({ ...sum, [letter]: [] }), {});
+
+const getNewCommonMistakes =
+  (question: RusLetter, answer: RusLetter) =>
+  (previousCommonMistakes: CommonMistakes): CommonMistakes => ({
+    ...previousCommonMistakes,
+    [question.letter]: [...previousCommonMistakes[question.letter], answer],
+  });
+
+/** This allow us to confuse user more by showing him answers with his common mistakes for that question */
+const getFailureLevelAdjustedWithQuestionCommonMistakes = (
+  question: RusLetter,
+  previousFailureLevel: FailureLevel,
+  commonMistakes: CommonMistakes,
+) =>
+  commonMistakes[question.letter].reduce(
+    (sum, mistake) => ({
+      ...sum,
+      [mistake.letter]: previousFailureLevel[mistake.letter] + FAILURE_LEVEL_COMMON_MISTAKE_PENALTY,
+    }),
+    previousFailureLevel,
+  );
+
+const GlobalStyles = createGlobalStyle`
+  body {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  *, *:before, *:after {
+    box-sizing: border-box;
+  }
+`;
 
 const Button = styled.div`
   display: flex;
@@ -120,7 +148,20 @@ const Answers = styled.div`
   justify-content: center;
   margin-top: 30px;
 `;
+const QuestionLetterCursive = styled.span`
+  font-family: 'Marck Script', cursive;
+`;
+const QuestionLetterSerif = styled.span`
+  font-family: 'Roboto Slab', serif;
+`;
+const QuestionLetterSansSerif = styled.span`
+  font-family: 'Roboto', sans-serif;
+`;
 const Question = styled.div`
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
   font-size: 50px;
   margin-top: 20px;
   text-align: center;
@@ -162,6 +203,7 @@ export const Quiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<RusLetter | undefined>(undefined);
   const [score, setScore] = useState(0);
   const [failureLevel, setFailureLevel] = useState(getInitialFailureLevel());
+  const [commonMistakes, setCommonMistakes] = useState(getInitialCommonMistakes());
 
   const nextQuestion = () => {
     const newQuestion = getRandomRusLetter(rusLettersArray, failureLevel);
@@ -171,7 +213,12 @@ export const Quiz = () => {
       const otherLetters = rusLettersArray.filter(
         (l) => !answersStack.map((a) => a.letter).includes(l.letter) && !answersStack.map((a) => a.pol).includes(l.pol),
       );
-      answersStack.push(getRandomRusLetter(otherLetters, failureLevel));
+      answersStack.push(
+        getRandomRusLetter(
+          otherLetters,
+          getFailureLevelAdjustedWithQuestionCommonMistakes(newQuestion, failureLevel, commonMistakes),
+        ),
+      );
     }
 
     const newAnswers = answersStack.map((a) => ({
@@ -199,6 +246,7 @@ export const Quiz = () => {
       } else {
         setScore((prev) => (prev > 20 ? prev - 20 : 0));
         setFailureLevel(getNewFailureLevelOnFailure(question));
+        setCommonMistakes(getNewCommonMistakes(question, answer));
       }
       setSelectedAnswer(answer);
     }
@@ -213,7 +261,11 @@ export const Quiz = () => {
           <React.Fragment>
             <SubHeader>Naucz się czytać cyrylicę - Quiz</SubHeader>
             <Header>Co znaczy ta litera?</Header>
-            <Question>{question.letter}</Question>
+            <Question>
+              <QuestionLetterSansSerif>{question.letter}</QuestionLetterSansSerif>
+              <QuestionLetterSerif>{question.letter}</QuestionLetterSerif>
+              <QuestionLetterCursive>{question.letter}</QuestionLetterCursive>
+            </Question>
             <Answers>
               {answers.map(({ answer, order }) => (
                 <Answer
